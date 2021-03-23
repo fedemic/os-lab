@@ -13,6 +13,11 @@ int main() {
 	FILE *f;
 	pid_t pid, sub_pid[N_SUBPROCESSES];
 	int i, r, status;
+	char filename[1000], num[4];
+
+	printf("Enter filename: ");
+	scanf("%s", filename);
+	sprintf(num, "%d", MAX_RAND);
 
 	pid = fork();
 	if(pid < 0) {		// error
@@ -21,7 +26,7 @@ int main() {
 	}
 
 	else if(pid == 0) {		// child process
-		f = fopen("random.txt", "w");
+		f = fopen(filename, "w");
 		
 		if (f == NULL) {
 			printf("Error opening file\n");
@@ -45,17 +50,17 @@ int main() {
 
 			if(sub_pid[i] == 0 && i == 0) {	// first child subprocess
 				execl("/usr/bin/wc", "wc", "-m", "/home/federico/Desktop/os-lab/lab_3/random.txt", NULL);		// linux command
-				printf("Failed execl\n");
+				printf("Failed execl 1\n");
 				exit(1);
 			}
 			else if(sub_pid[i] == 0 && i == 1) {		// second child subprocess
 				execl("/usr/bin/wc", "wc", "-w", "/home/federico/Desktop/os-lab/lab_3/random.txt", NULL);		// linux command
-				printf("Failed execl\n");
+				printf("Failed execl 2\n");
 				exit(1);
 			}
 			else if(sub_pid[i] == 0 && i == 2) {		// third child subprocess
-				execl("/home/federico/Desktop/os-lab/lab_3/get_average", "get_average", NULL, "/home/federico/Desktop/os-lab/lab_3", NULL);		// call custom program
-				printf("Failed execl\n");
+				execl("/home/federico/Desktop/os-lab/lab_3/get_average", "get_average", filename, num, "/home/federico/Desktop/os-lab/lab_3", NULL);		// call custom program
+				printf("Failed execl 3\n");
 				exit(1);
 			}
 		}
