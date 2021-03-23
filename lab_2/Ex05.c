@@ -40,7 +40,7 @@ int main() {
 				printf("CHILD %d (PID = %d): ", i, getpid());
 
 				for(j=0; j<N_RAND; j++) {		// generate N_RAND random numbers
-					srand(getpid());			// only PID used as seed since these children terminate (new PID every iteration)
+					srand(j + getpid());			// only PID used as seed since these children terminate (new PID every iteration)
 					r[j] = rand() % MAX_RAND;
 					printf("%d ", r[j]*r[j]);
 				}
