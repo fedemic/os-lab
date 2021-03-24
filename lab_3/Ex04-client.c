@@ -36,8 +36,9 @@ int main() {
 		}
 
 		printf("Enter a command: ");
-		gets(input);					// command is read from terminal
-		strcpy(str, input);				// command is put into segment
+		fgets(input, MAX_LENGTH, stdin);	// command is read from terminal
+		input[strcspn(input, "\n")] = 0;	// remove newline added by fgets function
+		strcpy(str, input);					// command is put into segment
 		printf("Executing %s\n", str);
 
 		if(strcmp(str, "exit") == 0) { 	// exit condition
