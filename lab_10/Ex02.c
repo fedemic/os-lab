@@ -2,19 +2,26 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <unistd.h>
 
 double prod = 1;
 int x;
 pthread_mutex_t lock;
 
+struct data {
+	int index;
+};
 
-void * thread_func(void *i) {
 
-	int th_i = *(int *)i;
-	double contr = pow(x, th_i);
+void * thread_func(void *arg) {
+
+	struct data *mydata;	
+	mydata = (struct data *)arg;
+
+	double contr = pow(x, mydata->index);
 
 	pthread_mutex_lock(&lock);
-	printf("Contribution %d: %lf\t", th_i, contr);
+	printf("Contribution %d: %lf\t", mydata->index, contr);
 	prod *= contr;
 	printf("New product is: %lf\n", prod);
 	pthread_mutex_unlock(&lock);
@@ -27,7 +34,7 @@ void * thread_func(void *i) {
 
 int main() {
 
-	int n;
+	int n, i;
 
 	printf("Insert value of N: ");
 	scanf("%d", &n);
@@ -36,14 +43,16 @@ int main() {
 
 	n++;
 	pthread_t threads[n];
+	struct data myparam[n];
 
 	pthread_mutex_init(&lock, NULL);
 
-	for(int i=0; i<n; i++) {
-		pthread_create(&threads[i], NULL, thread_func, &i);
+	for(i=0; i<n; i++) {
+		myparam[i].index = i;
+		pthread_create(&threads[i], NULL, thread_func, (void *)&myparam[i]);
 	}
 
-	for(int i=0; i<n; i++) {
+	for(i=0; i<n; i++) {
 		pthread_join(&threads[i], NULL);
 	}
 
