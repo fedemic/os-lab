@@ -2,15 +2,22 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <unistd.h>
 
 double sum = 0;
 pthread_mutex_t lock;
 
 
-void * thread_func(void *i) {
+struct data {
+	int index;
+};
 
-	int th_i = *(int *)i;	
-	double term = 1.0/pow(2, th_i);
+void * thread_func(void *arg) {
+
+	struct data *mydata;	
+	mydata = (struct data *)arg;
+
+	double term = 1.0/pow(2, mydata->index);
 
 	pthread_mutex_lock(&lock);
 	sum += term;
@@ -25,20 +32,22 @@ void * thread_func(void *i) {
 
 int main() {
 
-	int n;
+	int n, i;
 
 	printf("Insert value of N: ");
 	scanf("%d", &n);
 
 	pthread_t threads[n];
+	struct data myparam[n];
 
 	pthread_mutex_init(&lock, NULL);
 
-	for(int i=0; i<n; i++) {
-		pthread_create(&threads[i], NULL, thread_func, &i);
+	for(i=0; i<n; i++) {
+		myparam[i].index = i;
+		pthread_create(&threads[i], NULL, thread_func, (void *)&myparam[i]);
 	}
 
-	for(int i=0; i<n; i++) {
+	for(i=0; i<n; i++) {
 		pthread_join(&threads[i], NULL);
 	}
 
